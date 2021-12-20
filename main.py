@@ -2,22 +2,49 @@ import pygame
 #imports usefal golbal vars to use in events
 from pygame.locals import *
 import time
-#a func used to drow the bolck to use it at moving
+# imports random
+import random
+
+SIZE=40
+
+class Apple:
+	def __init__(self,parent_screen):
+		self.parent_screen=parent_screen
+		self.image=pygame.image.load("resources/apple.jpg")
+		self.x=SIZE*3
+		self.y=SIZE*3
+
+	def move(self):
+		# randint generates a random integar between the first parameter and the second
+		
+		self.x=random.randint(1,19)*SIZE
+		self.y=random.randint(1,14)*SIZE
+
+
+
+
+	def draw(self):
+		#we put fill here se that the prev block is cleared 
+		self.parent_screen.blit(self.image,(self.x,self.y))
+		pygame.display.flip()
 
 class Snake:
-	def __init__(self,parent_screen,direction="right"):
+	def __init__(self,parent_screen,length,direction="right"):
 		self.direction=direction
+		self.length=length
 		self.parent_screen=parent_screen
 		#load image from computer
 		self.block=pygame.image.load("resources/block.jpg")
 		#blit used to drow in window
-		self.x=100
-		self.y=100
+		#making array of blocks of size 40
+		self.x=[SIZE]*length
+		self.y=[SIZE]*length
 
 	def draw(self):
 		#we put fill here se that the prev block is cleared 
 		self.parent_screen.fill((47, 163, 92))
-		self.parent_screen.blit(self.block,(self.x,self.y))
+		for i in range(self.length):
+			self.parent_screen.blit(self.block,(self.x[i],self.y[i]))
 		pygame.display.flip()
 
 	def set_direction_left(self):
@@ -38,17 +65,27 @@ class Snake:
 
 
 	def move(self,direction):
+		for i in range(self.length-1,0,-1):
+			self.x[i]=self.x[i-1]
+			self.y[i]=self.y[i-1]
+
 		if self.direction=="right":
-			self.x+=10
+			self.x[0]+=SIZE
 
 		if self.direction=="left":
-			self.x-=10
+			self.x[0]-=SIZE
+
 		if self.direction=="up":
-			self.y-=10
+			self.y[0]-=SIZE
 
 		if self.direction=="down":
-			self.y+=10
+			self.y[0]+=SIZE
 
+
+	def increase_length(self):
+		self.length+=1
+		self.x.append(-1)
+		self.y.append(-1)
 
 class Game:
 	def __init__(self):
@@ -56,12 +93,24 @@ class Game:
 		#set mode inittialize game window
 		#500 and 500 are dimentions
 		#used slef to be able to call surface later with objects
-		self.surface=pygame.display.set_mode((500,500))
+		self.surface=pygame.display.set_mode((800,600))
 		#flip is necessary to display the color
 		self.surface.fill((47, 163, 92))
 		self.direction="right"
-		self.snake=Snake(self.surface,self.direction)	#because a game has a snake in it
+		self.snake=Snake(self.surface,3,self.direction)	#because a game has a snake in it
 		self.snake.draw()
+
+		self.apple=Apple(self.surface)
+		self.apple.draw()
+
+
+	def play(self):
+		self.snake.move(self.snake.direction)
+		self.snake.draw()
+		#self.apple.move_apple()
+		self.apple.draw()
+		self.is_collision()
+
 
 	def run(self):
 		running=True
@@ -69,6 +118,7 @@ class Game:
 		#while tp keep it always running instead of timer
 		#pygame offers different types of events
 		while running:
+
 			for event in pygame.event.get():
 				#keydown means the keyboard is pressed
 				if event.type==KEYDOWN:
@@ -88,10 +138,14 @@ class Game:
 				elif event.type==QUIT:
 					running=False
 
-			self.snake.move(self.snake.direction)
-			self.snake.draw()
+			self.play()
 			time.sleep(0.2)
 
+
+	def is_collision(self):
+		if self.snake.x[0]==self.apple.x and self.snake.y[0]==self.apple.y:
+			self.apple.move()
+			self.snake.increase_length()
 
 if __name__=="__main__":
 	game=Game()	#created object game from class Game
