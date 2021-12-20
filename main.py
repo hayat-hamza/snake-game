@@ -124,16 +124,20 @@ class Game:
 			for event in pygame.event.get():
 				#keydown means the keyboard is pressed
 				if event.type==KEYDOWN:
-					if event.key==K_ESCAPE:
-						running=False
-					if event.key==K_UP:
-						self.snake.direction=self.snake.set_direction_up()
-					if event.key==K_DOWN:
-						self.snake.direction=self.snake.set_direction_down()
-					if event.key==K_RIGHT:
-						self.snake.direction=direction=self.snake.set_direction_right()
-					if event.key==K_LEFT:
-						self.snake.direction=self.snake.set_direction_left()
+					if event.key==K_RETURN:
+						pause=False
+
+					if not pause:
+						if event.key==K_ESCAPE:
+							running=False
+						if event.key==K_UP:
+							self.snake.direction=self.snake.set_direction_up()
+						if event.key==K_DOWN:
+							self.snake.direction=self.snake.set_direction_down()
+						if event.key==K_RIGHT:
+							self.snake.direction=direction=self.snake.set_direction_right()
+						if event.key==K_LEFT:
+							self.snake.direction=self.snake.set_direction_left()
 
 
 				#close the window
@@ -146,6 +150,7 @@ class Game:
 			except Exception as e:
 				self.show_game_over()
 				pause=True
+				self.reset()
 		
 
 
@@ -161,6 +166,12 @@ class Game:
 			if self.snake.x[0]==self.snake.x[i] and self.snake.y[0]==self.snake.y[i]:
 				raise "GAME OVER"
 
+
+		#collision with window bondries
+		if self.snake.x[0]<0 or self.snake.x[0]>800 or self.snake.y[0]<0 or self.snake.y[0]>600:
+			raise "GAME OVER"
+
+
 	def display_score(self):
 		font=pygame.font.SysFont('arial',30)
 		#to store the score and displaye it
@@ -172,9 +183,15 @@ class Game:
 	def show_game_over(self):
 		self.surface.fill((235, 64, 52))
 		font=pygame.font.SysFont('arial',30)
-		text=font.render(f"GAME OVER,Score: {self.snake.length}",True,(15, 15, 15))
-		self.surface.blit(text,(400,300))	
+		text1=font.render(f"GAME OVER,Score: {self.snake.length}",True,(15, 15, 15))
+		text2=font.render("To play again press enter",True,(15, 15, 15))
+		self.surface.blit(text1,(400,300))	
+		self.surface.blit(text2,(400,400))	
 		pygame.display.flip()
+
+
+	def reset(self):
+		self.snake=Snake(self.surface,1,self.direction)	#because a game has a snake in it
 
 if __name__=="__main__":
 	game=Game()	#created object game from class Game
