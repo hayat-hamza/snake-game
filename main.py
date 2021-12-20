@@ -42,7 +42,7 @@ class Snake:
 
 	def draw(self):
 		#we put fill here se that the prev block is cleared 
-		self.parent_screen.fill((47, 163, 92))
+		#self.parent_screen.fill((47, 163, 92))
 		for i in range(self.length):
 			self.parent_screen.blit(self.block,(self.x[i],self.y[i]))
 		pygame.display.flip()
@@ -109,6 +109,7 @@ class Game:
 
 
 	def play(self):
+		self.render_background()
 		self.snake.move(self.snake.direction)
 		self.snake.draw()
 		#self.apple.move_apple()
@@ -117,7 +118,9 @@ class Game:
 		pygame.display.flip()
 		self.is_collision()
 		time.sleep(0.2)
-
+		if self.snake.length>7:
+			time.sleep(0.1)
+		
 
 	def run(self):
 		running=True
@@ -159,9 +162,6 @@ class Game:
 				pause=True
 				self.reset()
 		
-
-
-
 	def is_collision(self):
 		#snake colliding with apple
 		if self.snake.x[0]==self.apple.x and self.snake.y[0]==self.apple.y:
@@ -188,6 +188,9 @@ class Game:
 
 			raise "GAME OVER"
 
+	def render_background(self):
+		bg=pygame.image.load("resources/background.jpg")
+		self.surface.blit(bg,(0,0))
 
 	def display_score(self):
 		font=pygame.font.SysFont('arial',30)
