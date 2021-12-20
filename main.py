@@ -97,7 +97,7 @@ class Game:
 		#flip is necessary to display the color
 		self.surface.fill((47, 163, 92))
 		self.direction="right"
-		self.snake=Snake(self.surface,3,self.direction)	#because a game has a snake in it
+		self.snake=Snake(self.surface,1,self.direction)	#because a game has a snake in it
 		self.snake.draw()
 
 		self.apple=Apple(self.surface)
@@ -109,12 +109,14 @@ class Game:
 		self.snake.draw()
 		#self.apple.move_apple()
 		self.apple.draw()
+		self.display_score()
+		pygame.display.flip()
 		self.is_collision()
-
+		time.sleep(0.2)
 
 	def run(self):
 		running=True
-
+		pause=False
 		#while tp keep it always running instead of timer
 		#pygame offers different types of events
 		while running:
@@ -137,15 +139,42 @@ class Game:
 				#close the window
 				elif event.type==QUIT:
 					running=False
+			try:
+				if not pause:
+					self.play()
 
-			self.play()
-			time.sleep(0.2)
+			except Exception as e:
+				self.show_game_over()
+				pause=True
+		
 
 
 	def is_collision(self):
+		#snake colliding with apple
 		if self.snake.x[0]==self.apple.x and self.snake.y[0]==self.apple.y:
 			self.apple.move()
 			self.snake.increase_length()
+
+		#snake collide with snake	
+		#started with 3 becuse the head will never collide with head or fist 2
+		for i in range (3,self.snake.length):
+			if self.snake.x[0]==self.snake.x[i] and self.snake.y[0]==self.snake.y[i]:
+				raise "GAME OVER"
+
+	def display_score(self):
+		font=pygame.font.SysFont('arial',30)
+		#to store the score and displaye it
+		score=font.render(f"Score: {self.snake.length}",True,(255,255,255))
+		#we always need surface display it on it any object
+		self.surface.blit(score,(600,10))	
+		pygame.display.flip()
+
+	def show_game_over(self):
+		self.surface.fill((235, 64, 52))
+		font=pygame.font.SysFont('arial',30)
+		text=font.render(f"GAME OVER,Score: {self.snake.length}",True,(15, 15, 15))
+		self.surface.blit(text,(400,300))	
+		pygame.display.flip()
 
 if __name__=="__main__":
 	game=Game()	#created object game from class Game
