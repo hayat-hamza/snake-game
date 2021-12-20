@@ -92,6 +92,8 @@ class Game:
 		pygame.init()	#initalize whole module
 		pygame.display.set_caption("Snake and Apple game")
 		pygame.mixer.init()
+		pygame.mixer.music.load("resources/bg_music_1.mp3")
+		pygame.mixer.music.play()
 		#set mode inittialize game window
 		#500 and 500 are dimentions
 		#used slef to be able to call surface later with objects
@@ -116,22 +118,25 @@ class Game:
 		self.is_collision()
 		time.sleep(0.2)
 
+
 	def run(self):
 		running=True
 		pause=False
 		#while tp keep it always running instead of timer
 		#pygame offers different types of events
 		while running:
-
 			for event in pygame.event.get():
 				#keydown means the keyboard is pressed
 				if event.type==KEYDOWN:
 					if event.key==K_RETURN:
+						pygame.mixer.music.unpause()
 						pause=False
 
-					if not pause:
-						if event.key==K_ESCAPE:
+					if event.key==K_ESCAPE:
 							running=False
+
+					if not pause:
+						
 						if event.key==K_UP:
 							self.snake.direction=self.snake.set_direction_up()
 						if event.key==K_DOWN:
@@ -155,7 +160,6 @@ class Game:
 				self.reset()
 		
 
-				
 
 
 	def is_collision(self):
@@ -170,6 +174,7 @@ class Game:
 		#started with 3 becuse the head will never collide with head or fist 2
 		for i in range (3,self.snake.length):
 			if self.snake.x[0]==self.snake.x[i] and self.snake.y[0]==self.snake.y[i]:
+				pygame.mixer.music.pause()
 				sound=pygame.mixer.Sound("resources/crash.mp3")
 				pygame.mixer.Sound.play(sound)
 				raise "GAME OVER"
@@ -177,6 +182,7 @@ class Game:
 
 		#collision with window bondries
 		if self.snake.x[0]<0 or self.snake.x[0]>800 or self.snake.y[0]<0 or self.snake.y[0]>600:
+			pygame.mixer.music.pause()
 			sound=pygame.mixer.Sound("resources/crash.mp3")
 			pygame.mixer.Sound.play(sound)
 
