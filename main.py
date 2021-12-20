@@ -90,6 +90,8 @@ class Snake:
 class Game:
 	def __init__(self):
 		pygame.init()	#initalize whole module
+		pygame.display.set_caption("Snake and Apple game")
+		pygame.mixer.init()
 		#set mode inittialize game window
 		#500 and 500 are dimentions
 		#used slef to be able to call surface later with objects
@@ -153,22 +155,31 @@ class Game:
 				self.reset()
 		
 
+				
+
 
 	def is_collision(self):
 		#snake colliding with apple
 		if self.snake.x[0]==self.apple.x and self.snake.y[0]==self.apple.y:
 			self.apple.move()
 			self.snake.increase_length()
+			sound=pygame.mixer.Sound("resources/ding.mp3")
+			pygame.mixer.Sound.play(sound)
 
 		#snake collide with snake	
 		#started with 3 becuse the head will never collide with head or fist 2
 		for i in range (3,self.snake.length):
 			if self.snake.x[0]==self.snake.x[i] and self.snake.y[0]==self.snake.y[i]:
+				sound=pygame.mixer.Sound("resources/crash.mp3")
+				pygame.mixer.Sound.play(sound)
 				raise "GAME OVER"
 
 
 		#collision with window bondries
 		if self.snake.x[0]<0 or self.snake.x[0]>800 or self.snake.y[0]<0 or self.snake.y[0]>600:
+			sound=pygame.mixer.Sound("resources/crash.mp3")
+			pygame.mixer.Sound.play(sound)
+
 			raise "GAME OVER"
 
 
